@@ -3,6 +3,8 @@ name: Release friends kit
 on:
   push:
     tags: ["v*"]
+    # The more-spells mod releases from its branch; the release step makes the tag.
+    branches: [more-spells]
   workflow_dispatch:
     inputs:
       tag:
@@ -18,11 +20,11 @@ jobs:
     runs-on: windows-latest
     env:
       CARGO_INCREMENTAL: 0
-      TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+      TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || (github.ref_type == 'branch' && 'v0.3.6.1' || github.ref_name) }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.TAG }}
+          ref: ${{ github.ref_type == 'branch' && github.sha || env.TAG }}
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.98.1
@@ -39,6 +41,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }}
           generate_release_notes: true
           make_latest: true
           files: |
