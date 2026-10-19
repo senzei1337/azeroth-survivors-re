@@ -316,7 +316,7 @@ pub(super) fn drive_hero(
                 None => (vel, flags, pace),
             };
             // Space hops: WoW's jump keeps its launch; the classic hop steers in the air.
-            let jump = playing && keys.just_pressed(KeyCode::Space);
+            let jump = playing && super::keybinds::just_pressed(&keys, super::keybinds::Bind::Jump);
             let vel = leash_velocity(center, map.leash, feet, vel, dt);
             let vel = hm.body.air_velocity(vel, wow);
             let terrain = points.terrain_height_under(feet);
@@ -455,16 +455,17 @@ fn walk_classic(
     if let Some(auto) = auto {
         dir = super::auto::steer(auto);
     } else if playing {
-        if keys.any_pressed([KeyCode::KeyW, KeyCode::ArrowUp]) {
+        use super::keybinds::{pressed, Bind};
+        if pressed(keys, Bind::Forward) {
             dir.z -= 1.0;
         }
-        if keys.any_pressed([KeyCode::KeyS, KeyCode::ArrowDown]) {
+        if pressed(keys, Bind::Backward) {
             dir.z += 1.0;
         }
-        if keys.any_pressed([KeyCode::KeyA, KeyCode::ArrowLeft]) {
+        if pressed(keys, Bind::TurnLeft) || pressed(keys, Bind::StrafeLeft) {
             dir.x -= 1.0;
         }
-        if keys.any_pressed([KeyCode::KeyD, KeyCode::ArrowRight]) {
+        if pressed(keys, Bind::TurnRight) || pressed(keys, Bind::StrafeRight) {
             dir.x += 1.0;
         }
     }

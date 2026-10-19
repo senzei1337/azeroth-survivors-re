@@ -65,7 +65,14 @@ const RACE_CARD_W: f32 = 210.0;
 const FINAL_BOSS: Color = Color::srgb(1.0, 0.5, 0.25);
 const FOES: Color = Color::srgb(0.8, 0.8, 0.8);
 
-/// The fixed, top-to-bottom order of the character-select utility stack.
+/// The width of a footer utility button (Customize, Armory, the Faire, Multiplayer, Options,
+/// Quit): narrow enough that the whole footer row fits a 16:10 screen.
+pub(super) const SLOT_W: f32 = 120.0;
+/// The footer row's foot over the screen's bottom edge, and the gap between its three groups.
+const FOOTER_BOTTOM: f32 = 30.0;
+const FOOTER_GAP: f32 = 14.0;
+
+/// The fixed, left-to-right order of the character-select utility buttons.
 #[cfg(test)]
 const SECONDARY_BUTTONS: [&str; 6] = [
     "Customize",
@@ -332,22 +339,50 @@ pub(super) fn build_menu(
                 1.0,
             );
         });
-        // The character-select footer has a centred primary pair and one right-hand action stack.
+        // The footer is one row along the screen's foot, under both the race tower and the zone
+        // list (each ends ~100 units over the bottom edge): Customize, Armory and the Faire on the
+        // left, Enter World and Run Options centred, Multiplayer, Options and Quit on the right.
         ui.spawn((Node {
             position_type: PositionType::Absolute,
-            bottom: Val::Px(30.0),
+            bottom: Val::Px(FOOTER_BOTTOM),
             width: Val::Percent(100.0),
             flex_direction: FlexDirection::Row,
-            align_items: AlignItems::FlexEnd,
-            justify_content: JustifyContent::SpaceBetween,
-            padding: UiRect::horizontal(Val::Px(28.0)),
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::Center,
+            column_gap: Val::Px(FOOTER_GAP),
+            padding: UiRect::horizontal(Val::Px(16.0)),
             ..default()
         },))
             .with_children(|c| {
-                // Balances the action stack and keeps Enter World visually centred.
-                c.spawn(Node {
-                    width: Val::Px(150.0),
+                let group = || Node {
+                    flex_direction: FlexDirection::Row,
+                    align_items: AlignItems::FlexStart,
+                    column_gap: Val::Px(6.0),
                     ..default()
+                };
+                let slot_node = || Node {
+                    flex_direction: FlexDirection::Column,
+                    align_items: AlignItems::Center,
+                    ..default()
+                };
+                c.spawn((MenuButtons, group())).with_children(|left| {
+                    left.spawn((MenuSlot::Customize, slot_node()))
+                        .with_children(|slot| {
+                            glue_button(
+                                slot,
+                                &art,
+                                f,
+                                MenuAction::Customize,
+                                "Customize",
+                                SLOT_W,
+                                38.0,
+                                GlueBtnKind::Small,
+                                1.0,
+                            );
+                        });
+                    left.spawn((MenuSlot::Armory, slot_node()))
+                        .with_children(|slot| super::armory::entry_button(slot, &art, f));
+                    left.spawn((MenuSlot::Faire, slot_node()));
                 });
                 c.spawn((
                     MenuPrimary,
@@ -371,66 +406,17 @@ pub(super) fn build_menu(
                         1.0,
                     );
                 });
-                c.spawn((
-                    MenuButtons,
-                    Node {
-                        width: Val::Px(150.0),
-                        flex_direction: FlexDirection::Column,
-                        row_gap: Val::Px(6.0),
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                ))
-                .with_children(|stack| {
-                    stack
-                        .spawn((
-                            MenuSlot::Customize,
-                            Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                ..default()
-                            },
-                        ))
-                        .with_children(|slot| {
-                            glue_button(
-                                slot,
-                                &art,
-                                f,
-                                MenuAction::Customize,
-                                "Customize",
-                                150.0,
-                                38.0,
-                                GlueBtnKind::Small,
-                                1.0,
-                            );
-                        });
-                    stack
-                        .spawn((
-                            MenuSlot::Armory,
-                            Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                ..default()
-                            },
-                        ))
-                        .with_children(|slot| super::armory::entry_button(slot, &art, f));
-                    for slot in [MenuSlot::Faire, MenuSlot::Multiplayer, MenuSlot::Options] {
-                        stack.spawn((
-                            slot,
-                            Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                ..default()
-                            },
-                        ));
+                c.spawn(group()).with_children(|right| {
+                    for slot in [MenuSlot::Multiplayer, MenuSlot::Options] {
+                        right.spawn((slot, slot_node()));
                     }
                     glue_button(
-                        stack,
+                        right,
                         &art,
                         f,
                         MenuAction::Quit,
                         "Quit",
-                        150.0,
+                        SLOT_W,
                         38.0,
                         GlueBtnKind::Small,
                         1.0,

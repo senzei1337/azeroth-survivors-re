@@ -11,6 +11,8 @@ use serde::{Deserialize, Serialize};
 use super::Phase;
 
 /// The swap key. `C` stays free for the character pane.
+// The stock key; play reads the rebindable one ([`crate::survivors::keybinds`]).
+#[cfg_attr(not(test), allow(dead_code))]
 pub(super) const KEY: KeyCode = KeyCode::KeyV;
 
 /// The two views.
@@ -106,7 +108,7 @@ pub(super) fn load_view(mut view: ResMut<View>) {
 
 /// `V` swaps the view and remembers it.
 pub(super) fn toggle_view(keys: Res<ButtonInput<KeyCode>>, mut view: ResMut<View>) {
-    if keys.just_pressed(KEY) {
+    if super::keybinds::just_pressed(&keys, super::keybinds::Bind::ToggleView) {
         view.mode = view.mode.toggled();
         save(view.mode);
     }

@@ -8,8 +8,6 @@ use super::profile::Profile;
 use super::units::Fx;
 use super::{HeroState, LocalHero, Phase};
 
-const KEYS: [KeyCode; 3] = [KeyCode::Digit7, KeyCode::Digit8, KeyCode::Digit9];
-
 #[derive(Clone, Copy)]
 struct Toy {
     key: &'static str,
@@ -235,9 +233,10 @@ fn use_toys(
             (*interaction == Interaction::Pressed).then_some(button.0)
         })
         .collect();
-    let Some(index) = KEYS
+    use super::keybinds::{just_pressed, Bind};
+    let Some(index) = [Bind::Toy1, Bind::Toy2, Bind::Toy3]
         .iter()
-        .position(|key| keys.just_pressed(*key))
+        .position(|b| just_pressed(&keys, *b))
         .or_else(|| clicked.into_iter().next())
     else {
         return;

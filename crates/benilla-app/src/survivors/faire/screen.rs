@@ -220,7 +220,7 @@ fn build_entry(
         .insert(EntryBuilt)
         .with_children(|ui| {
             ui.spawn(Node {
-                width: px(150.0),
+                width: px(crate::survivors::menu::SLOT_W),
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
                 row_gap: px(1.0),
@@ -233,7 +233,7 @@ fn build_entry(
                     f,
                     FaireAction::Open,
                     "Darkmoon Faire",
-                    150.0,
+                    crate::survivors::menu::SLOT_W,
                     38.0,
                     GlueBtnKind::Small,
                     1.0,

@@ -140,7 +140,7 @@ fn build_ui(
 fn menu_button(ui: &mut ChildSpawnerCommands, art: &GlueArt, f: &Handle<Font>) {
     let px = Val::Px;
     ui.spawn(Node {
-        width: px(150.0),
+        width: px(crate::survivors::menu::SLOT_W),
         flex_direction: FlexDirection::Column,
         align_items: AlignItems::Center,
         row_gap: px(1.0),
@@ -153,7 +153,7 @@ fn menu_button(ui: &mut ChildSpawnerCommands, art: &GlueArt, f: &Handle<Font>) {
             f,
             NetAction::Open,
             "Multiplayer",
-            150.0,
+            crate::survivors::menu::SLOT_W,
             38.0,
             GlueBtnKind::Small,
             1.0,

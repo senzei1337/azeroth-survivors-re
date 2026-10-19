@@ -40,6 +40,8 @@ use crate::glue::backdrop::{backdrop_border, tiled_bg_node};
 use crate::glue::widgets::{outlined_text, overlay, GlueText, Hilight};
 
 /// The key that opens and closes the panel during a run.
+// The stock key; play reads the rebindable one ([`crate::survivors::keybinds`]).
+#[cfg_attr(not(test), allow(dead_code))]
 pub(super) const KEY: KeyCode = KeyCode::KeyC;
 
 /// Over the HUD (400), under the tooltips; never shown with the level-up cards or the pause menu.

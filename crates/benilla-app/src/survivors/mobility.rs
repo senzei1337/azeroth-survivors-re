@@ -18,6 +18,8 @@ use super::wowcam;
 use super::{HeroState, LocalHero, Phase, Run};
 
 pub(super) const LEARN_LEVEL: u32 = 5;
+// The stock key; play reads the rebindable one ([`crate::survivors::keybinds`]).
+#[cfg_attr(not(test), allow(dead_code))]
 pub(super) const KEY: KeyCode = KeyCode::KeyF;
 /// Charge's cone in WoW's view: an enemy within this angle (radians) of the facing, either side.
 const CHARGE_CONE: f32 = 60.0 * std::f32::consts::PI / 180.0;
@@ -269,7 +271,9 @@ pub(super) fn cast_mobility(
         m.haste_t = (m.haste_t - dt).max(0.0);
         m.vanish_t = (m.vanish_t - dt).max(0.0);
     }
-    if *phase.get() != Phase::Playing || !keys.just_pressed(KEY) {
+    if *phase.get() != Phase::Playing
+        || !super::keybinds::just_pressed(&keys, super::keybinds::Bind::Mobility)
+    {
         return;
     }
     let Some((me, mut tf, mut state, mut hm, _)) = heroes.iter_mut().find(|(.., local)| *local)

@@ -913,7 +913,9 @@ fn send_self_res(
     local: Query<&HeroState, With<LocalHero>>,
     mut out: MessageWriter<SelfRes>,
 ) {
-    let pressed = keys.is_some_and(|k| k.just_pressed(synergy::SELF_RES_KEY));
+    let pressed = keys.is_some_and(|k| {
+        crate::survivors::keybinds::just_pressed(&k, crate::survivors::keybinds::Bind::Jump)
+    });
     if pressed && session.in_run && local.single().is_ok_and(|me| !me.alive()) {
         out.write(SelfRes);
     }

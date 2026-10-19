@@ -59,7 +59,11 @@ pub(super) fn skip_gold(run: &Run, hero: &HeroState) -> u32 {
 
 /// The Skip button's label, with what it pays.
 fn skip_label(run: &Run, hero: &HeroState) -> String {
-    format!("Skip (X): +{} gold", skip_gold(run, hero))
+    format!(
+        "Skip ({}): +{} gold",
+        super::keybinds::label(super::keybinds::Bind::Skip),
+        skip_gold(run, hero)
+    )
 }
 
 /// Deal a whole new hand, if a reroll is left.
@@ -211,13 +215,14 @@ pub(super) fn use_tools(
         .iter()
         .find(|(i, _)| **i == Interaction::Pressed)
         .map(|(_, &t)| t);
-    if keys.just_pressed(KeyCode::KeyR) {
+    use super::keybinds::{just_pressed, Bind};
+    if just_pressed(&keys, Bind::Reroll) {
         used = Some(Tool::Reroll);
     }
-    if keys.just_pressed(KeyCode::KeyB) {
+    if just_pressed(&keys, Bind::Banish) {
         used = Some(Tool::Banish);
     }
-    if keys.just_pressed(super::strip::SKIP_KEY) {
+    if just_pressed(&keys, Bind::Skip) {
         used = Some(Tool::Skip);
     }
     // The co-op strip spends banked hands; a jewelry hand cannot be rerolled.
@@ -312,10 +317,21 @@ pub(super) fn refresh_tools(
     }
     for (label, mut text, mut color) in &mut labels {
         let want = match label.0 {
-            Tool::Reroll => format!("Reroll (R): {} left", me.rerolls),
+            Tool::Reroll => format!(
+                "Reroll ({}): {} left",
+                super::keybinds::label(super::keybinds::Bind::Reroll),
+                me.rerolls
+            ),
             Tool::Skip => skip_label(&run, me),
-            Tool::Banish if mode.banishing => "Cancel banish (B)".to_string(),
-            Tool::Banish => format!("Banish (B): {} left", me.banishes),
+            Tool::Banish if mode.banishing => format!(
+                "Cancel banish ({})",
+                super::keybinds::label(super::keybinds::Bind::Banish)
+            ),
+            Tool::Banish => format!(
+                "Banish ({}): {} left",
+                super::keybinds::label(super::keybinds::Bind::Banish),
+                me.banishes
+            ),
         };
         if text.0 != want {
             text.0 = want;

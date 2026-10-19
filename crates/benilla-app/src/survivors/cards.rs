@@ -694,11 +694,15 @@ pub(super) fn choose_card(
         .iter()
         .find(|(c, i)| **i == Interaction::Pressed && c.t >= DEAL_SECS)
         .map(|(c, _)| c.index);
-    for (i, key) in [KeyCode::Digit1, KeyCode::Digit2, KeyCode::Digit3]
-        .into_iter()
-        .enumerate()
+    for (i, bind) in [
+        super::keybinds::Bind::Pick1,
+        super::keybinds::Bind::Pick2,
+        super::keybinds::Bind::Pick3,
+    ]
+    .into_iter()
+    .enumerate()
     {
-        if keys.just_pressed(key) {
+        if super::keybinds::just_pressed(&keys, bind) {
             pick = Some(i);
         }
     }

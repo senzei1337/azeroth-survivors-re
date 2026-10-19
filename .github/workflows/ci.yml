@@ -6,7 +6,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [progression, more-spells]
+    branches: [progression, more-spells, ui-mods]
   workflow_dispatch:
 
 permissions:

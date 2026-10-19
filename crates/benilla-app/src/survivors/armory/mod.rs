@@ -369,7 +369,7 @@ pub(super) fn entry_button(ui: &mut ChildSpawnerCommands, art: &GlueArt, f: &Han
         f,
         ArmoryAction::Open,
         "Armory",
-        150.0,
+        crate::survivors::menu::SLOT_W,
         38.0,
         GlueBtnKind::Small,
         1.0,

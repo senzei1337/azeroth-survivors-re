@@ -114,8 +114,10 @@ pub(super) fn spawn_root(
 
 /// What a key does: 1, 2 and 3 take a card or, while replacing, name the slot; Esc goes back.
 fn key_act(keys: &ButtonInput<KeyCode>, offer: &JewelOffer) -> Option<Act> {
-    let digits = [KeyCode::Digit1, KeyCode::Digit2, KeyCode::Digit3];
-    let n = digits.iter().position(|k| keys.just_pressed(*k));
+    use crate::survivors::keybinds::{just_pressed, Bind};
+    let n = [Bind::Pick1, Bind::Pick2, Bind::Pick3]
+        .iter()
+        .position(|b| just_pressed(keys, *b));
     match offer.replacing() {
         Some(piece) => {
             if keys.just_pressed(KeyCode::Escape) {

@@ -59,13 +59,14 @@ pub(super) struct Keys {
 impl Keys {
     /// W/S or ↑/↓ forward and back, A/D or ←/→ turn, Q/E strafe.
     pub(super) fn read(keys: &ButtonInput<KeyCode>) -> Self {
+        use super::keybinds::{pressed, Bind};
         Self {
-            forward: keys.any_pressed([KeyCode::KeyW, KeyCode::ArrowUp]),
-            backward: keys.any_pressed([KeyCode::KeyS, KeyCode::ArrowDown]),
-            turn_left: keys.any_pressed([KeyCode::KeyA, KeyCode::ArrowLeft]),
-            turn_right: keys.any_pressed([KeyCode::KeyD, KeyCode::ArrowRight]),
-            strafe_left: keys.pressed(KeyCode::KeyQ),
-            strafe_right: keys.pressed(KeyCode::KeyE),
+            forward: pressed(keys, Bind::Forward),
+            backward: pressed(keys, Bind::Backward),
+            turn_left: pressed(keys, Bind::TurnLeft),
+            turn_right: pressed(keys, Bind::TurnRight),
+            strafe_left: pressed(keys, Bind::StrafeLeft),
+            strafe_right: pressed(keys, Bind::StrafeRight),
         }
     }
 }

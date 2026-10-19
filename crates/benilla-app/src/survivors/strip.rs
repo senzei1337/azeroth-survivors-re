@@ -19,8 +19,11 @@ use super::party::{self, Bot, LocalHero, NetRole};
 use super::{jewelry, HeroState, Phase, Rng, Run};
 
 /// The key that opens and hides the hand strip; the toy bar has 7 to 9, F the mobility spell.
+// The stock key; play reads the rebindable one ([`crate::survivors::keybinds`]).
+#[allow(dead_code)]
 pub(super) const STRIP_KEY: KeyCode = KeyCode::Tab;
 /// The hand's Skip key (R rerolls, B banishes, 1 to 3 pick).
+#[allow(dead_code)]
 pub(super) const SKIP_KEY: KeyCode = KeyCode::KeyX;
 /// Divine Protection: the glow over a Focused hero.
 pub(super) const FOCUS_MARK: u32 = 498;
@@ -167,7 +170,7 @@ fn toggle_strip(
         strip.open = true;
         return;
     }
-    if keys.just_pressed(STRIP_KEY) {
+    if super::keybinds::just_pressed(&keys, super::keybinds::Bind::LevelUpStrip) {
         strip.open = !strip.open;
     }
 }
@@ -308,7 +311,10 @@ fn refresh_badge(
         if node.display != display {
             node.display = display;
         }
-        let want = format!("Level up! \u{00d7}{n} (Tab)");
+        let want = format!(
+            "Level up! \u{00d7}{n} ({})",
+            super::keybinds::label(super::keybinds::Bind::LevelUpStrip)
+        );
         for &child in children {
             if let Ok(mut t) = texts.get_mut(child) {
                 if t.0 != want {

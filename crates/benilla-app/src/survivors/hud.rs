@@ -24,6 +24,8 @@ use super::{
 const GOLD: Color = Color::srgb(1.0, 0.82, 0.0);
 /// The mobility button's edge, an action button's 36 units.
 const MOBILITY_SIZE: f32 = 40.0;
+/// The action bar's foot, just over the 13-unit XP bar.
+const BAR_BOTTOM: f32 = 18.0;
 const EDGE: Color = Color::srgb(0.55, 0.45, 0.25);
 const BUTTON: Color = Color::srgba(0.18, 0.06, 0.04, 0.95);
 const BUTTON_HOT: Color = Color::srgba(0.36, 0.12, 0.06, 0.98);
@@ -118,6 +120,12 @@ pub(super) struct AbilitySweep {
 /// The class mobility's action button, bottom centre over the XP bar; shown once it is learned.
 #[derive(Component)]
 pub(super) struct MobilitySlot;
+/// The bottom-centre action bar holding the ability, passive and toy rows and the mobility slot.
+#[derive(Component)]
+pub(super) struct ActionBar;
+/// The mobility button's key, over it; follows the binding.
+#[derive(Component)]
+pub(super) struct MobilityKey;
 #[derive(Component)]
 pub(super) struct MobilityIcon;
 #[derive(Component)]
@@ -532,71 +540,117 @@ pub(super) fn setup_hud(
                 });
             });
             minimap::spawn_cluster(root, f, &map);
-            // The mobility button: a 36-unit action slot in `UI-Quickslot2`, its key over it.
+            // The action bar, bottom centre over the XP bar where 1.12's main bar sits: the
+            // passives on a short row above, then the abilities, the mobility button and the toys.
             root.spawn((
-                MobilitySlot,
+                ActionBar,
                 Node {
                     position_type: PositionType::Absolute,
-                    left: Val::Percent(50.0),
-                    bottom: Val::Px(24.0),
-                    margin: UiRect::left(Val::Px(-MOBILITY_SIZE / 2.0)),
+                    bottom: Val::Px(BAR_BOTTOM),
+                    width: Val::Percent(100.0),
                     flex_direction: FlexDirection::Column,
                     align_items: AlignItems::Center,
-                    row_gap: Val::Px(2.0),
-                    display: Display::None,
+                    row_gap: Val::Px(6.0),
                     ..default()
                 },
+                bevy::ui::FocusPolicy::Pass,
             ))
-            .with_children(|col| {
-                col.spawn(centered(f, "F", 18.0, Color::WHITE));
-                col.spawn((
+            .with_children(|bar| {
+                bar.spawn((
+                    PassiveRow,
                     Node {
-                        width: Val::Px(MOBILITY_SIZE),
-                        height: Val::Px(MOBILITY_SIZE),
+                        column_gap: Val::Px(4.0),
                         ..default()
                     },
-                    Interaction::default(),
-                    TipFor::Mobility,
-                ))
-                .with_children(|slot| {
-                    // `UI-Quickslot2` is the empty slot's 64×64 frame, the button 36 inside it.
-                    slot.spawn((
+                ));
+                bar.spawn(Node {
+                    flex_direction: FlexDirection::Row,
+                    align_items: AlignItems::FlexEnd,
+                    column_gap: Val::Px(14.0),
+                    ..default()
+                })
+                .with_children(|main| {
+                    main.spawn((
+                        AbilityRow,
                         Node {
-                            position_type: PositionType::Absolute,
-                            left: Val::Px(-MOBILITY_SIZE * 0.42),
-                            top: Val::Px(-MOBILITY_SIZE * 0.42),
-                            width: Val::Px(MOBILITY_SIZE * 1.84),
-                            height: Val::Px(MOBILITY_SIZE * 1.84),
-                            ..default()
-                        },
-                        ImageNode {
-                            color: Color::NONE,
-                            ..default()
-                        },
-                        UiArt::crop("Interface\\Buttons\\UI-Quickslot2", [0.0, 1.0, 0.0, 1.0]),
-                    ));
-                    slot.spawn((
-                        MobilityIcon,
-                        Node {
-                            width: Val::Percent(100.0),
-                            height: Val::Percent(100.0),
-                            ..default()
-                        },
-                        ImageNode {
-                            color: Color::srgba(0.0, 0.0, 0.0, 0.6),
+                            column_gap: Val::Px(4.0),
                             ..default()
                         },
                     ));
-                    let handle = sweeps_init.add(SweepUiMaterial { sweep: 0.0 });
-                    slot.spawn((
+                    // The mobility button: a 36-unit action slot in `UI-Quickslot2`, its key over it.
+                    main.spawn((
+                        MobilitySlot,
                         Node {
-                            position_type: PositionType::Absolute,
-                            width: Val::Percent(100.0),
-                            height: Val::Percent(100.0),
+                            margin: UiRect::horizontal(Val::Px(10.0)),
+                            flex_direction: FlexDirection::Column,
+                            align_items: AlignItems::Center,
+                            row_gap: Val::Px(2.0),
+                            display: Display::None,
                             ..default()
                         },
-                        MaterialNode(handle.clone()),
-                        MobilitySweep(handle),
+                    ))
+                    .with_children(|col| {
+                        col.spawn((MobilityKey, centered(f, "F", 18.0, Color::WHITE)));
+                        col.spawn((
+                            Node {
+                                width: Val::Px(MOBILITY_SIZE),
+                                height: Val::Px(MOBILITY_SIZE),
+                                ..default()
+                            },
+                            Interaction::default(),
+                            TipFor::Mobility,
+                        ))
+                        .with_children(|slot| {
+                            // `UI-Quickslot2` is the empty slot's 64×64 frame, the button 36 inside it.
+                            slot.spawn((
+                                Node {
+                                    position_type: PositionType::Absolute,
+                                    left: Val::Px(-MOBILITY_SIZE * 0.42),
+                                    top: Val::Px(-MOBILITY_SIZE * 0.42),
+                                    width: Val::Px(MOBILITY_SIZE * 1.84),
+                                    height: Val::Px(MOBILITY_SIZE * 1.84),
+                                    ..default()
+                                },
+                                ImageNode {
+                                    color: Color::NONE,
+                                    ..default()
+                                },
+                                UiArt::crop(
+                                    "Interface\\Buttons\\UI-Quickslot2",
+                                    [0.0, 1.0, 0.0, 1.0],
+                                ),
+                            ));
+                            slot.spawn((
+                                MobilityIcon,
+                                Node {
+                                    width: Val::Percent(100.0),
+                                    height: Val::Percent(100.0),
+                                    ..default()
+                                },
+                                ImageNode {
+                                    color: Color::srgba(0.0, 0.0, 0.0, 0.6),
+                                    ..default()
+                                },
+                            ));
+                            let handle = sweeps_init.add(SweepUiMaterial { sweep: 0.0 });
+                            slot.spawn((
+                                Node {
+                                    position_type: PositionType::Absolute,
+                                    width: Val::Percent(100.0),
+                                    height: Val::Percent(100.0),
+                                    ..default()
+                                },
+                                MaterialNode(handle.clone()),
+                                MobilitySweep(handle),
+                            ));
+                        });
+                    });
+                    main.spawn((
+                        ToyRow,
+                        Node {
+                            column_gap: Val::Px(4.0),
+                            ..default()
+                        },
                     ));
                 });
             });
@@ -608,34 +662,10 @@ pub(super) fn setup_hud(
                 ..default()
             })
             .with_children(|row| {
+                // The abilities moved to the bottom action bar; this keeps the clock centred.
                 row.spawn(Node {
-                    flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(6.0),
                     width: Val::Px(300.0),
                     ..default()
-                })
-                .with_children(|col| {
-                    col.spawn((
-                        AbilityRow,
-                        Node {
-                            column_gap: Val::Px(4.0),
-                            ..default()
-                        },
-                    ));
-                    col.spawn((
-                        PassiveRow,
-                        Node {
-                            column_gap: Val::Px(4.0),
-                            ..default()
-                        },
-                    ));
-                    col.spawn((
-                        ToyRow,
-                        Node {
-                            column_gap: Val::Px(4.0),
-                            ..default()
-                        },
-                    ));
                 });
                 // The clock, with the level and the kill count on one line under it.
                 row.spawn(Node {
@@ -1549,7 +1579,7 @@ pub(super) fn keys(
                 } else {
                     next.set(Phase::Paused);
                 }
-            } else if keys.just_pressed(super::charpanel::KEY) {
+            } else if super::keybinds::just_pressed(&keys, super::keybinds::Bind::Character) {
                 next.set(Phase::Character);
             }
         }
@@ -1560,7 +1590,9 @@ pub(super) fn keys(
         }
         // The Character panel closes on its own key, or Esc.
         Phase::Character => {
-            if keys.any_just_pressed([KeyCode::Escape, super::charpanel::KEY]) {
+            if keys.just_pressed(KeyCode::Escape)
+                || super::keybinds::just_pressed(&keys, super::keybinds::Bind::Character)
+            {
                 next.set(Phase::Playing);
             }
         }
@@ -1776,13 +1808,14 @@ pub(super) fn refresh_hud(
         Query<&mut Text, With<OverTitle>>,
         Query<&mut Text, With<OverStats>>,
         Query<&mut Text, With<XpText>>,
+        Query<&mut Text, With<MobilityKey>>,
     )>,
     mut xp_fill: Query<&mut Node, With<XpFill>>,
     rows: Query<(Entity, Has<AbilityRow>), Or<(With<AbilityRow>, With<PassiveRow>)>>,
     toy_rows: Query<Entity, With<ToyRow>>,
     toy_bar: Res<super::toys::ToyBar>,
     mut sweeps: ResMut<Assets<SweepUiMaterial>>,
-    mut last_version: Local<Option<u32>>,
+    mut last_version: Local<Option<(u32, u32)>>,
 ) {
     let need = data::xp_to_next(run.level);
     if let Ok(mut n) = xp_fill.single_mut() {
@@ -1868,10 +1901,14 @@ pub(super) fn refresh_hud(
     }
 
     // The ability and passive icons, rebuilt when the build changes.
-    if *last_version == Some(run.version) {
+    let version = (run.version, super::keybinds::generation());
+    if *last_version == Some(version) {
         return;
     }
-    *last_version = Some(run.version);
+    *last_version = Some(version);
+    for mut t in &mut texts.p7() {
+        **t = super::keybinds::label(super::keybinds::Bind::Mobility);
+    }
     let f = &font.0;
     for (row, is_abilities) in &rows {
         commands.entity(row).despawn_related::<Children>();
@@ -1965,7 +2002,17 @@ pub(super) fn refresh_hud(
                 .with_children(|button| {
                     button.spawn(centered(
                         f,
-                        format!("{} {}", i + 7, slot.name()),
+                        format!(
+                            "{} {}",
+                            super::keybinds::label(
+                                [
+                                    super::keybinds::Bind::Toy1,
+                                    super::keybinds::Bind::Toy2,
+                                    super::keybinds::Bind::Toy3,
+                                ][i.min(2)]
+                            ),
+                            slot.name()
+                        ),
                         10.0,
                         Color::WHITE,
                     ));

@@ -82,7 +82,7 @@ fn attach(mut commands: Commands, cams: Query<Entity, Ungraded>) {
 }
 
 fn toggle(keys: Res<ButtonInput<KeyCode>>, mut on: ResMut<GradeOn>) {
-    if keys.just_pressed(KeyCode::KeyG) {
+    if super::keybinds::just_pressed(&keys, super::keybinds::Bind::Grade) {
         on.0 = !on.0;
     }
 }

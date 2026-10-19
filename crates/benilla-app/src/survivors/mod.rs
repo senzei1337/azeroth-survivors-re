@@ -26,6 +26,7 @@ mod hand;
 mod hero;
 mod hud;
 mod jewelry;
+mod keybinds;
 mod mechanics;
 mod menu;
 mod meta;
@@ -131,7 +132,7 @@ impl Plugin for SurvivorsPlugin {
             .add_message::<profile::RunEnded>()
             .add_plugins(bevy::ui_render::UiMaterialPlugin::<hud::SweepUiMaterial>::default())
             .add_systems(Startup, (profile::load_profile, hud::setup_hud).chain())
-            .add_systems(Startup, view::load_view)
+            .add_systems(Startup, (view::load_view, keybinds::load_keybinds))
             .add_systems(Update, hero::daylight)
             .add_systems(PostUpdate, profile::save_if_dirty)
             // Every picker of the frame has had its say: the level-up waits for the party.

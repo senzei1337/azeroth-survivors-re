@@ -1,4 +1,10 @@
 //! The `warcraft-survivors` launcher: the build stamp, handed to the survivors mode.
+// Shipping builds are a windowed app on Windows: double-clicking the exe opens the game alone,
+// with no console window beside it. Debug builds keep the console for their log.
+#![cfg_attr(
+    all(target_os = "windows", not(debug_assertions)),
+    windows_subsystem = "windows"
+)]
 
 use benilla_app::BuildId;
 #[cfg(target_os = "windows")]

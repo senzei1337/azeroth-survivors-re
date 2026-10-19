@@ -12,6 +12,8 @@ use crate::survivors::Phase;
 
 /// Opens and closes the meter. Free in the mode: the world map it opens in the client does not
 /// exist here, and the dev chord's mute (with Ctrl and Shift held) is left alone.
+// The stock key; play reads the rebindable one ([`crate::survivors::keybinds`]).
+#[cfg_attr(not(test), allow(dead_code))]
 pub(super) const KEY: KeyCode = KeyCode::KeyM;
 /// One bar for each member of the largest party.
 const ROWS: usize = MAX_ALLIES + 1;
@@ -160,7 +162,10 @@ pub(super) fn toggle(
         KeyCode::AltLeft,
         KeyCode::AltRight,
     ]);
-    if in_run(*phase.get()) && !modified && keys.just_pressed(KEY) {
+    if in_run(*phase.get())
+        && !modified
+        && crate::survivors::keybinds::just_pressed(&keys, crate::survivors::keybinds::Bind::Meter)
+    {
         meter.open = !meter.open;
     }
 }

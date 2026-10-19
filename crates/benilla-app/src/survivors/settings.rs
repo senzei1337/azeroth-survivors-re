@@ -6,6 +6,7 @@ use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
 
 use super::hud::{HudFont, MenuRoot, UiAction};
+use super::keybinds::{self, Bind};
 use super::menu::{MenuBuilt, MenuSlot};
 use crate::cvars::Cvars;
 use crate::glue::art::{GlueArt, GOLD, INFO_TEXT};
@@ -13,7 +14,7 @@ use crate::glue::backdrop::{backdrop_border, tiled_bg_node};
 use crate::glue::widgets::{glue_button, outlined_text, GlueBtnKind, GlueText};
 use crate::glue::GlueClicks;
 
-const PANEL_W: f32 = 570.0;
+const PANEL_W: f32 = 760.0;
 const SOUND: &[Setting] = &[
     Setting::slider("Master", "MasterVolume"),
     Setting::slider("Effects", "SoundVolume"),
@@ -32,19 +33,9 @@ const INTERFACE: &[Setting] = &[
     Setting::slider("Mouse Look Sensitivity", "mousespeed"),
     Setting::check("Invert Mouse Look", "mouseInvertPitch"),
 ];
-const KEYS: &[&str] = &[
-    "WASD — move",
-    "Space — jump",
-    "V — classic / WoW camera",
-    "C — character",
-    "Tab — target",
-    "1 / 2 / 3 — ability strip",
-    "M — damage meter",
-    "7 / 8 / 9 — toys",
-    "Enter — chat",
-    "Middle mouse — ping",
-    "Esc — game menu",
-];
+/// The keys that stay put, under the rebindable ones.
+const FIXED_KEYS: &str = "Fixed: Esc game menu  ·  Enter chat  ·  mouse buttons for the camera";
+const KEY_HINT: &str = "Click a slot, then press a key.  Esc cancels, Backspace clears it.";
 
 #[derive(Clone, Copy)]
 struct Setting {
@@ -103,6 +94,8 @@ impl Page {
 struct State {
     open: bool,
     page: Option<Page>,
+    /// The Key Bindings slot waiting for a key.
+    capture: Option<(Bind, usize)>,
 }
 #[derive(Component)]
 struct Built;
@@ -116,6 +109,9 @@ enum Action {
     Less(&'static str),
     More(&'static str),
     Toggle(&'static str),
+    /// A Key Bindings slot: the bind and which of its two keys.
+    Rebind(Bind, usize),
+    ResetKeys,
 }
 #[derive(Component)]
 struct Body;
@@ -155,7 +151,7 @@ fn build(
             &font.0,
             Action::Open,
             "Options",
-            150.0,
+            crate::survivors::menu::SLOT_W,
             38.0,
             GlueBtnKind::Small,
             1.0,
@@ -267,7 +263,7 @@ fn modal(p: &mut ChildSpawnerCommands, art: &GlueArt, font: &Handle<Font>) {
 
 fn input(
     clicks: Res<GlueClicks>,
-    keys: Res<ButtonInput<KeyCode>>,
+    mut keys: ResMut<ButtonInput<KeyCode>>,
     hud: Query<(Entity, &UiAction)>,
     actions: Query<(Entity, &Action)>,
     mut state: ResMut<State>,
@@ -282,8 +278,33 @@ fn input(
         state.page = Some(Page::Sound);
         return;
     }
+    // A slot waiting for a key takes the next one; nothing else sees it this frame.
+    if let (true, Some((bind, slot))) = (state.open, state.capture) {
+        let first = keys.get_just_pressed().next().copied();
+        if let Some(key) = first {
+            let taken = match key {
+                KeyCode::Escape => true,
+                KeyCode::Backspace => {
+                    keybinds::assign(bind, slot, None);
+                    true
+                }
+                k if keybinds::bindable(k) => {
+                    keybinds::assign(bind, slot, Some(k));
+                    keybinds::swallow(k);
+                    true
+                }
+                _ => false,
+            };
+            if taken {
+                keys.clear_just_pressed(key);
+                end_capture(&mut state);
+                return;
+            }
+        }
+    }
     if state.open && keys.just_pressed(KeyCode::Escape) {
         state.open = false;
+        end_capture(&mut state);
         return;
     }
     let Some(action) = actions
@@ -298,8 +319,26 @@ fn input(
             state.open = true;
             state.page = Some(Page::Sound);
         }
-        Action::Close => state.open = false,
-        Action::Page(p) => state.page = Some(p),
+        Action::Close => {
+            state.open = false;
+            end_capture(&mut state);
+        }
+        Action::Page(p) => {
+            state.page = Some(p);
+            end_capture(&mut state);
+        }
+        Action::Rebind(bind, slot) => {
+            if state.capture == Some((bind, slot)) {
+                end_capture(&mut state);
+            } else {
+                state.capture = Some((bind, slot));
+                keybinds::set_capturing(true);
+            }
+        }
+        Action::ResetKeys => {
+            keybinds::reset();
+            end_capture(&mut state);
+        }
         Action::Toggle(name) => {
             let on = cvars.get(name).is_some_and(|v| v != "0");
             // `gxWindow` is inverted from the user-facing checkbox: zero is fullscreen.
@@ -333,6 +372,13 @@ fn input(
         }
     }
 }
+/// The page stops waiting for a key; the change to `state` redraws it with the bindings as
+/// they now are.
+fn end_capture(state: &mut State) {
+    state.capture = None;
+    keybinds::set_capturing(false);
+}
+
 fn format_value(name: &str, value: f32) -> String {
     if name == "farclip" {
         value.clamp(50.0, 777.0).round().to_string()
@@ -369,24 +415,7 @@ fn redraw(
     commands
         .entity(body)
         .with_children(|p| match state.page.unwrap_or(Page::Sound) {
-            Page::Keys => {
-                for key in KEYS {
-                    outlined_text(
-                        p,
-                        Node::default(),
-                        (),
-                        (),
-                        GlueText {
-                            text: key,
-                            size: 15.0,
-                            color: Color::WHITE,
-                            wrap: false,
-                        },
-                        &font.0,
-                        1.0,
-                    );
-                }
-            }
+            Page::Keys => keys_page(p, &art, &font.0, state.capture),
             page => {
                 for setting in settings(page) {
                     row(p, &art, &font.0, setting, &cvars);
@@ -394,6 +423,123 @@ fn redraw(
             }
         });
 }
+/// The Key Bindings page: every [`Bind`] with its two slots in two columns, the hint, the fixed
+/// keys and the reset.
+fn keys_page(
+    p: &mut ChildSpawnerCommands,
+    art: &GlueArt,
+    font: &Handle<Font>,
+    capture: Option<(Bind, usize)>,
+) {
+    let table = keybinds::table();
+    let half = Bind::ALL.len().div_ceil(2);
+    p.spawn(Node {
+        width: Val::Percent(100.0),
+        flex_direction: FlexDirection::Row,
+        justify_content: JustifyContent::SpaceEvenly,
+        ..default()
+    })
+    .with_children(|cols| {
+        for chunk in Bind::ALL.chunks(half) {
+            cols.spawn(Node {
+                flex_direction: FlexDirection::Column,
+                row_gap: Val::Px(3.0),
+                ..default()
+            })
+            .with_children(|col| {
+                for &bind in chunk {
+                    col.spawn(Node {
+                        height: Val::Px(26.0),
+                        align_items: AlignItems::Center,
+                        column_gap: Val::Px(6.0),
+                        ..default()
+                    })
+                    .with_children(|r| {
+                        outlined_text(
+                            r,
+                            Node {
+                                width: Val::Px(150.0),
+                                ..default()
+                            },
+                            (),
+                            (),
+                            GlueText {
+                                text: bind.label(),
+                                size: 13.0,
+                                color: GOLD,
+                                wrap: false,
+                            },
+                            font,
+                            1.0,
+                        );
+                        let keys = table.get(bind);
+                        for (slot, key) in keys.iter().enumerate() {
+                            let caption = if capture == Some((bind, slot)) {
+                                "Press a key".to_string()
+                            } else {
+                                key.map(keybinds::key_name)
+                                    .unwrap_or_else(|| "-".to_string())
+                            };
+                            glue_button(
+                                r,
+                                art,
+                                font,
+                                Action::Rebind(bind, slot),
+                                &caption,
+                                92.0,
+                                24.0,
+                                GlueBtnKind::Small,
+                                1.0,
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    });
+    for (line, color) in [(KEY_HINT, INFO_TEXT), (FIXED_KEYS, INFO_TEXT)] {
+        p.spawn(Node {
+            width: Val::Percent(100.0),
+            justify_content: JustifyContent::Center,
+            ..default()
+        })
+        .with_children(|c| {
+            outlined_text(
+                c,
+                Node::default(),
+                (),
+                (),
+                GlueText {
+                    text: line,
+                    size: 12.0,
+                    color,
+                    wrap: false,
+                },
+                font,
+                1.0,
+            );
+        });
+    }
+    p.spawn(Node {
+        width: Val::Percent(100.0),
+        justify_content: JustifyContent::Center,
+        ..default()
+    })
+    .with_children(|c| {
+        glue_button(
+            c,
+            art,
+            font,
+            Action::ResetKeys,
+            "Reset to Defaults",
+            170.0,
+            26.0,
+            GlueBtnKind::Small,
+            1.0,
+        );
+    });
+}
+
 fn settings(page: Page) -> &'static [Setting] {
     match page {
         Page::Sound => SOUND,

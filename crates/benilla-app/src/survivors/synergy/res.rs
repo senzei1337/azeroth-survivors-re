@@ -35,6 +35,8 @@ pub(in crate::survivors) const REBIRTH_COOLDOWN: f32 = 120.0;
 pub(in crate::survivors) const SELF_RES_AUTO: f32 = 2.0;
 pub(in crate::survivors) const ANKH_COOLDOWN: f32 = 300.0;
 /// The local player's key to rise with a soulstone or the ankh.
+// The stock key; play reads the rebindable one ([`crate::survivors::keybinds`]).
+#[cfg_attr(not(test), allow(dead_code))]
 pub(in crate::survivors) const SELF_RES_KEY: KeyCode = KeyCode::Space;
 
 pub(in crate::survivors) const SOULSTONE: SpellRef =
@@ -299,7 +301,9 @@ pub(super) fn self_revive(
 ) {
     let dt = time.delta_secs();
     let party = coop(heroes.iter().count());
-    let pressed = keys.is_some_and(|k| k.just_pressed(SELF_RES_KEY));
+    let pressed = keys.is_some_and(|k| {
+        crate::survivors::keybinds::just_pressed(&k, crate::survivors::keybinds::Bind::Jump)
+    });
     for ((e, guid, _, mut store, mut marks, member, mut h), local) in &mut heroes {
         let res = &mut h.synergy.res;
         res.ankh_cd = (res.ankh_cd - dt).max(0.0);
