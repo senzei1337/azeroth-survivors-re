@@ -27,7 +27,7 @@ function Invoke-AzerothSurvivorsUpdate {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)][string]$KitPath,
-        [string]$ReleaseApiUrl = 'https://api.github.com/repos/deanmathieson/azeroth-survivors-re/releases/latest',
+        [string]$ReleaseApiUrl = 'https://api.github.com/repos/senzei1337/azeroth-survivors-re/releases/latest',
         [string]$ReleaseJsonPath,
         [switch]$DryRun
     )

@@ -967,6 +967,285 @@ pub(crate) static ABILITIES: &[AbilityDef] = &[
             duration: 4.0
         }
     ),
+    // --- More spells: classic 1.12 spells each class's pool lacked (the "more-spells" mod) ---
+    // Warrior
+    ability!(
+        "hamstring",
+        1715,
+        Melee {
+            damage: 12.0,
+            cooldown: 1.4,
+            range: 5.5,
+            effect: Effect::Slow(0.4, 4.0),
+            mark: 1715
+        }
+    ),
+    ability!(
+        "intimidating_shout",
+        5246,
+        Nova {
+            damage: 3.0,
+            cooldown: 14.0,
+            radius: 9.0,
+            effect: Effect::Fear(4.0),
+            mark: 5246
+        }
+    ),
+    ability!(
+        "revenge",
+        6572,
+        Melee {
+            damage: 24.0,
+            cooldown: 2.0,
+            range: 5.5,
+            count: 2
+        }
+    ),
+    // Paladin
+    ability!(
+        "holy_light",
+        635,
+        Heal {
+            damage: 45.0,
+            cooldown: 12.0,
+            duration: 3.0
+        }
+    ),
+    ability!(
+        "turn_undead",
+        2878,
+        Nova {
+            damage: 6.0,
+            cooldown: 13.0,
+            radius: 10.0,
+            effect: Effect::Fear(4.0),
+            mark: 2878
+        }
+    ),
+    // Hunter
+    ability!(
+        "raptor_strike",
+        2973,
+        Melee {
+            damage: 20.0,
+            cooldown: 1.2,
+            range: 5.5
+        }
+    ),
+    ability!(
+        "wing_clip",
+        2974,
+        Melee {
+            damage: 6.0,
+            cooldown: 3.0,
+            range: 6.0,
+            count: 2,
+            effect: Effect::Slow(0.5, 5.0),
+            mark: 2974
+        }
+    ),
+    ability!(
+        "viper_sting",
+        3034,
+        Bolt {
+            damage: 3.0,
+            dot: 3.0,
+            duration: 8.0,
+            cooldown: 3.5,
+            range: 26.0,
+            count: 2,
+            effect: Effect::Weaken(0.7, 8.0),
+            mark: 3034
+        }
+    ),
+    // Rogue
+    ability!(
+        "garrote",
+        703,
+        Dot {
+            dot: 6.0,
+            cooldown: 4.0,
+            range: 6.0,
+            count: 2,
+            duration: 6.0,
+            mark: 703
+        }
+    ),
+    ability!(
+        "blind",
+        2094,
+        Strike {
+            damage: 2.0,
+            cooldown: 12.0,
+            range: 10.0,
+            count: 3,
+            effect: Effect::Fear(4.0),
+            mark: 2094
+        }
+    ),
+    ability!(
+        "kick",
+        1766,
+        Melee {
+            damage: 12.0,
+            cooldown: 2.0,
+            range: 5.5,
+            effect: Effect::Stun(1.0)
+        }
+    ),
+    // Priest
+    ability!(
+        "devouring_plague",
+        2944,
+        Strike {
+            damage: 6.0,
+            dot: 4.0,
+            duration: 8.0,
+            cooldown: 4.0,
+            range: 20.0,
+            count: 2,
+            effect: Effect::Drain(0.5),
+            mark: 2944
+        }
+    ),
+    ability!(
+        "starshards",
+        10797,
+        Strike {
+            damage: 10.0,
+            cooldown: 2.6,
+            range: 22.0,
+            count: 3
+        }
+    ),
+    ability!(
+        "mana_burn",
+        8129,
+        Strike {
+            damage: 28.0,
+            cooldown: 4.5,
+            range: 20.0,
+            radius: 3.0
+        }
+    ),
+    // Shaman
+    ability!(
+        "healing_wave",
+        331,
+        Heal {
+            damage: 40.0,
+            cooldown: 10.0,
+            duration: 2.0
+        }
+    ),
+    ability!(
+        "earthbind_totem",
+        2484,
+        // Pulses like Magma Totem, but its pulse carries the slow (see `Totem::effect`).
+        Totem {
+            damage: 2.0,
+            cooldown: 20.0,
+            radius: 9.0,
+            duration: 15.0,
+            effect: Effect::Slow(0.5, 2.5),
+            totem: (4588, 3600)
+        }
+    ),
+    // Mage
+    ability!(
+        "scorch",
+        2948,
+        Strike {
+            damage: 14.0,
+            cooldown: 1.5,
+            range: 22.0
+        }
+    ),
+    ability!(
+        "mana_shield",
+        1463,
+        Shield {
+            damage: 26.0,
+            cooldown: 14.0,
+            duration: 10.0
+        }
+    ),
+    ability!(
+        "counterspell",
+        2139,
+        Strike {
+            damage: 6.0,
+            cooldown: 7.0,
+            range: 24.0,
+            count: 2,
+            effect: Effect::Stun(2.0),
+            mark: 2139
+        }
+    ),
+    // Warlock
+    ability!(
+        "drain_life",
+        689,
+        Strike {
+            damage: 14.0,
+            cooldown: 2.2,
+            range: 20.0,
+            effect: Effect::Drain(0.6),
+            mark: 689
+        }
+    ),
+    ability!(
+        "fear",
+        5782,
+        Strike {
+            damage: 2.0,
+            cooldown: 10.0,
+            range: 20.0,
+            count: 2,
+            effect: Effect::Fear(5.0),
+            mark: 5782
+        }
+    ),
+    ability!(
+        "drain_soul",
+        1120,
+        Strike {
+            damage: 16.0,
+            cooldown: 3.0,
+            range: 20.0,
+            effect: Effect::Execute(0.2)
+        }
+    ),
+    // Druid
+    ability!(
+        "swipe",
+        779,
+        Cone {
+            damage: 13.0,
+            cooldown: 2.2,
+            radius: 7.0
+        }
+    ),
+    ability!(
+        "bash",
+        5211,
+        Melee {
+            damage: 10.0,
+            cooldown: 6.0,
+            range: 5.5,
+            effect: Effect::Stun(3.0),
+            mark: 5211
+        }
+    ),
+    ability!(
+        "regrowth",
+        8936,
+        Heal {
+            damage: 40.0,
+            cooldown: 14.0,
+            duration: 8.0
+        }
+    ),
 ];
 
 pub(crate) fn ability(key: &str) -> &'static AbilityDef {
@@ -2341,6 +2620,401 @@ pub(crate) static LEGENDARIES: &[LegendaryDef] = &[
         ],
         visual_spell: 5221,
     },
+    // --- More spells (the "more-spells" mod) ---
+    LegendaryDef {
+        ability: "hamstring",
+        name: "Hobbling Blow",
+        text: "Each cut spreads to two more foes and leaves them bleeding.",
+        mechanics: &[
+            M::new(
+                hit("hamstring"),
+                Mech::Split {
+                    count: 2,
+                    spread: 6.0,
+                },
+            )
+            .visual(1715),
+            M::new(hit("hamstring"), dot(School::Physical, 6.0, 6.0)).visual(772),
+        ],
+        visual_spell: 1715,
+    },
+    LegendaryDef {
+        ability: "intimidating_shout",
+        name: "Rallying Roar",
+        text: "The shout rallies you: more damage and a barrier while they flee.",
+        mechanics: &[
+            M::new(
+                cast("intimidating_shout"),
+                Mech::Burst {
+                    duration: 5.0,
+                    bonuses: &[Bonus::new(StatKey::Damage, 0.2)],
+                },
+            )
+            .visual(6673),
+            M::new(
+                cast("intimidating_shout"),
+                Mech::Shield {
+                    amount: 30.0,
+                    duration: 6.0,
+                },
+            )
+            .visual(871),
+        ],
+        visual_spell: 5246,
+    },
+    LegendaryDef {
+        ability: "revenge",
+        name: "Vengeful Counter",
+        text: "Kills strike again at once, and critical strikes stun.",
+        mechanics: &[
+            M::new(kill("revenge"), Mech::Echo { extra_casts: 1 }).cooldown(0.4),
+            M::new(crit("revenge"), cc(CcKind::Stun, 1.5)).visual(12809),
+        ],
+        visual_spell: 6572,
+    },
+    LegendaryDef {
+        ability: "holy_light",
+        name: "Holy Radiance",
+        text: "Heals your whole party, and falling low calls a burst of holy light.",
+        mechanics: &[
+            M::new(
+                cast("holy_light"),
+                Mech::HealPulse {
+                    radius: 15.0,
+                    amount: 12.0,
+                },
+            )
+            .at(Aim::Hero)
+            .visual(635),
+            M::new(
+                Trigger::OnLowHealth { threshold: 0.3 },
+                Mech::HealPulse {
+                    radius: 20.0,
+                    amount: 35.0,
+                },
+            )
+            .at(Aim::Hero)
+            .visual(635)
+            .cooldown(40.0),
+        ],
+        visual_spell: 635,
+    },
+    LegendaryDef {
+        ability: "turn_undead",
+        name: "Holy Terror",
+        text: "Fleeing foes are struck by holy blasts, and the light empowers you.",
+        mechanics: &[
+            M::new(
+                hit("turn_undead"),
+                nova_cc(School::Holy, 6.0, 16.0, CcKind::Stun, 1.0),
+            )
+            .visual(2812)
+            .cooldown(1.0),
+            M::new(
+                cast("turn_undead"),
+                Mech::Burst {
+                    duration: 5.0,
+                    bonuses: &[Bonus::new(StatKey::Damage, 0.25)],
+                },
+            )
+            .visual(20216),
+        ],
+        visual_spell: 2878,
+    },
+    LegendaryDef {
+        ability: "raptor_strike",
+        name: "Mongoose Fury",
+        text: "Strikes cleave into two more foes, and kills strike again at once.",
+        mechanics: &[
+            M::new(
+                hit("raptor_strike"),
+                Mech::Split {
+                    count: 2,
+                    spread: 6.0,
+                },
+            )
+            .visual(2973),
+            M::new(kill("raptor_strike"), Mech::Echo { extra_casts: 1 }).cooldown(0.4),
+        ],
+        visual_spell: 2973,
+    },
+    LegendaryDef {
+        ability: "wing_clip",
+        name: "Pinning Clip",
+        text: "Clips two more foes, and often pins them to the ground.",
+        mechanics: &[
+            M::new(
+                hit("wing_clip"),
+                Mech::Split {
+                    count: 2,
+                    spread: 6.0,
+                },
+            )
+            .visual(2974),
+            M::new(hit_by("wing_clip", 0.4), cc(CcKind::Root, 2.0)).visual(1510),
+        ],
+        visual_spell: 2974,
+    },
+    LegendaryDef {
+        ability: "viper_sting",
+        name: "Venom Spray",
+        text: "The venom spreads to the two foes beside each target.",
+        mechanics: &[M::new(hit("viper_sting"), dot(School::Nature, 4.0, 9.0))
+            .at(spread(6.0, 2))
+            .visual(1978)],
+        visual_spell: 3034,
+    },
+    LegendaryDef {
+        ability: "garrote",
+        name: "Iron Garrote",
+        text: "The wire's bleed spreads to two more foes.",
+        mechanics: &[M::new(hit("garrote"), dot(School::Physical, 5.0, 6.0))
+            .at(spread(6.0, 2))
+            .visual(1943)],
+        visual_spell: 703,
+    },
+    LegendaryDef {
+        ability: "blind",
+        name: "Smoke Bomb",
+        text: "The powder clouds over the two foes beside each target too.",
+        mechanics: &[M::new(hit("blind"), cc(CcKind::Fear, 3.0))
+            .at(spread(5.0, 2))
+            .visual(1776)],
+        visual_spell: 2094,
+    },
+    LegendaryDef {
+        ability: "kick",
+        name: "Crushing Kick",
+        text: "Kicks two more foes, and critical strikes stun them hard.",
+        mechanics: &[
+            M::new(
+                hit("kick"),
+                Mech::Split {
+                    count: 2,
+                    spread: 6.0,
+                },
+            )
+            .visual(1766),
+            M::new(crit("kick"), cc(CcKind::Stun, 1.5)).visual(12809),
+        ],
+        visual_spell: 1766,
+    },
+    LegendaryDef {
+        ability: "devouring_plague",
+        name: "Pestilence",
+        text: "The plague leaps to two more foes, and its victims' life mends your party.",
+        mechanics: &[
+            M::new(hit("devouring_plague"), dot(School::Shadow, 4.0, 9.0))
+                .at(spread(6.0, 2))
+                .visual(589),
+            M::new(
+                hit_by("devouring_plague", 0.25),
+                Mech::HealPulse {
+                    radius: 12.0,
+                    amount: 3.0,
+                },
+            )
+            .at(Aim::Hero)
+            .visual(15286)
+            .cooldown(1.0),
+        ],
+        visual_spell: 2944,
+    },
+    LegendaryDef {
+        ability: "starshards",
+        name: "Falling Stars",
+        text: "Stars keep falling around you wherever the shards strike.",
+        mechanics: &[M::new(
+            hit_by("starshards", 0.3),
+            nova(School::Arcane, 3.0, 8.0, 0.0),
+        )
+        .at(Aim::Random { range: 14.0 })
+        .visual(2912)],
+        visual_spell: 10797,
+    },
+    LegendaryDef {
+        ability: "mana_burn",
+        name: "Mana Detonation",
+        text: "Each burn detonates around its target, and critical strikes burn again.",
+        mechanics: &[
+            M::new(hit("mana_burn"), nova(School::Shadow, 5.0, 12.0, 0.0)).visual(17877),
+            M::new(crit("mana_burn"), Mech::Echo { extra_casts: 1 }).cooldown(0.5),
+        ],
+        visual_spell: 8129,
+    },
+    LegendaryDef {
+        ability: "healing_wave",
+        name: "Tidal Surge",
+        text: "Heals your whole party, and falling low calls a great tidal heal.",
+        mechanics: &[
+            M::new(
+                cast("healing_wave"),
+                Mech::HealPulse {
+                    radius: 15.0,
+                    amount: 10.0,
+                },
+            )
+            .at(Aim::Hero)
+            .visual(331),
+            M::new(
+                Trigger::OnLowHealth { threshold: 0.3 },
+                Mech::HealPulse {
+                    radius: 20.0,
+                    amount: 35.0,
+                },
+            )
+            .at(Aim::Hero)
+            .visual(331)
+            .cooldown(40.0),
+        ],
+        visual_spell: 331,
+    },
+    LegendaryDef {
+        ability: "earthbind_totem",
+        name: "Earthgrip Totem",
+        text: "Its grip sometimes roots enemies fast in the earth.",
+        mechanics: &[M::new(hit_by("earthbind_totem", 0.2), cc(CcKind::Root, 2.0)).visual(16689)],
+        visual_spell: 2484,
+    },
+    LegendaryDef {
+        ability: "scorch",
+        name: "Scorched Earth",
+        text: "Leaves the ground smouldering, and critical strikes erupt in flame.",
+        mechanics: &[
+            M::new(hit("scorch"), ground(School::Fire, 3.5, 6.0, 4.0))
+                .visual(5740)
+                .cooldown(1.0),
+            M::new(crit("scorch"), nova(School::Fire, 4.0, 14.0, 1.0)).visual(8349),
+        ],
+        visual_spell: 2948,
+    },
+    LegendaryDef {
+        ability: "mana_shield",
+        name: "Arcane Ward",
+        text: "The shield flares out, blasting and throwing back everything nearby.",
+        mechanics: &[M::new(
+            cast("mana_shield"),
+            nova(School::Arcane, 11.0, 6.0, 4.0),
+        )
+        .at(Aim::Hero)
+        .visual(1449)],
+        visual_spell: 1463,
+    },
+    LegendaryDef {
+        ability: "counterspell",
+        name: "Spellbreaker",
+        text: "Silences two more foes, and critical strikes can ready every spell at once.",
+        mechanics: &[
+            M::new(
+                hit("counterspell"),
+                Mech::Split {
+                    count: 2,
+                    spread: 8.0,
+                },
+            )
+            .visual(2139),
+            M::new(crit("counterspell"), Mech::ResetCooldowns)
+                .visual(11129)
+                .cooldown(10.0),
+        ],
+        visual_spell: 2139,
+    },
+    LegendaryDef {
+        ability: "drain_life",
+        name: "Life Funnel",
+        text: "Drains through two more enemies, healing you from each.",
+        mechanics: &[M::new(
+            hit("drain_life"),
+            Mech::Chain {
+                jumps: 2,
+                falloff: 0.85,
+            },
+        )
+        .visual(689)],
+        visual_spell: 689,
+    },
+    LegendaryDef {
+        ability: "fear",
+        name: "Mass Hysteria",
+        text: "Terror spreads to the two beside each victim, and dread eats at them.",
+        mechanics: &[
+            M::new(hit("fear"), cc(CcKind::Fear, 3.0))
+                .at(spread(5.0, 2))
+                .visual(1776),
+            M::new(hit("fear"), dot(School::Shadow, 4.0, 10.0)).visual(172),
+        ],
+        visual_spell: 5782,
+    },
+    LegendaryDef {
+        ability: "drain_soul",
+        name: "Soul Rend",
+        text: "Wounded souls are torn out, and each kill seeks out three more.",
+        mechanics: &[
+            M::new(
+                hit("drain_soul"),
+                Mech::Execute {
+                    threshold: 0.35,
+                    mult: 2.5,
+                },
+            )
+            .visual(17877),
+            M::new(
+                kill("drain_soul"),
+                Mech::Split {
+                    count: 3,
+                    spread: 10.0,
+                },
+            )
+            .visual(17877),
+        ],
+        visual_spell: 1120,
+    },
+    LegendaryDef {
+        ability: "swipe",
+        name: "Savage Swipe",
+        text: "Each swipe rakes its victims and lashes out a second time.",
+        mechanics: &[
+            M::new(hit("swipe"), dot(School::Physical, 6.0, 6.0)).visual(1822),
+            M::new(cast("swipe"), Mech::Echo { extra_casts: 1 }),
+        ],
+        visual_spell: 779,
+    },
+    LegendaryDef {
+        ability: "bash",
+        name: "Earthshatter Bash",
+        text: "The blow's shock stuns everything around the target.",
+        mechanics: &[M::new(
+            hit("bash"),
+            nova_cc(School::Physical, 5.0, 8.0, CcKind::Stun, 1.5),
+        )
+        .visual(1833)],
+        visual_spell: 5211,
+    },
+    LegendaryDef {
+        ability: "regrowth",
+        name: "Wild Growth",
+        text: "Heals your whole party and wraps you in bark.",
+        mechanics: &[
+            M::new(
+                cast("regrowth"),
+                Mech::HealPulse {
+                    radius: 20.0,
+                    amount: 12.0,
+                },
+            )
+            .at(Aim::Hero)
+            .visual(774),
+            M::new(
+                cast("regrowth"),
+                Mech::Shield {
+                    amount: 30.0,
+                    duration: 15.0,
+                },
+            )
+            .visual(22812),
+        ],
+        visual_spell: 8936,
+    },
 ];
 
 pub(crate) const MAX_ABILITY_LEVEL: u8 = 8;
@@ -2463,6 +3137,9 @@ pub(crate) static CLASSES: &[ClassDef] = &[
             "retaliation",
             "bloodthirst",
             "shield_slam",
+            "hamstring",
+            "intimidating_shout",
+            "revenge",
         ],
         looks: &[
             1300, 1374, 1375, 1504, 1578, 1599, 1707, 1721, 1880, 2096, 2103, 2113, 2196, 2198,
@@ -2488,6 +3165,8 @@ pub(crate) static CLASSES: &[ClassDef] = &[
             "divine_shield",
             "judgement",
             "crusader_strike",
+            "holy_light",
+            "turn_undead",
         ],
         looks: &[
             1299, 1499, 1622, 3087, 3088, 3089, 3284, 3289, 3346, 3393, 7356,
@@ -2509,6 +3188,9 @@ pub(crate) static CLASSES: &[ClassDef] = &[
             "explosive_trap",
             "concussive_shot",
             "aimed_shot",
+            "raptor_strike",
+            "wing_clip",
+            "viper_sting",
         ],
         looks: &[
             1373, 1703, 1723, 1882, 2066, 2087, 2105, 2112, 2205, 2206, 2251, 3056, 3072, 3073,
@@ -2533,6 +3215,9 @@ pub(crate) static CLASSES: &[ClassDef] = &[
             "kidney_shot",
             "backstab",
             "ambush",
+            "garrote",
+            "blind",
+            "kick",
         ],
         looks: &[
             1297, 1327, 1328, 1507, 1580, 1603, 1704, 1725, 1886, 2231, 2243, 2252, 2631, 2639,
@@ -2556,6 +3241,9 @@ pub(crate) static CLASSES: &[ClassDef] = &[
             "psychic_scream",
             "power_word_shield",
             "mind_flay",
+            "devouring_plague",
+            "starshards",
+            "mana_burn",
         ],
         looks: &[
             1295, 1495, 1579, 1602, 1708, 1733, 1897, 2137, 2138, 2139, 2200, 2201, 2202, 2618,
@@ -2581,6 +3269,8 @@ pub(crate) static CLASSES: &[ClassDef] = &[
             "magma_totem",
             "lightning_shield",
             "stormstrike",
+            "healing_wave",
+            "earthbind_totem",
         ],
         looks: &[
             1360, 1878, 2082, 2102, 2123, 3746, 3816, 4231, 4552, 10180, 13341,
@@ -2606,6 +3296,9 @@ pub(crate) static CLASSES: &[ClassDef] = &[
             "cone_of_cold",
             "blast_wave",
             "pyroblast",
+            "scorch",
+            "mana_shield",
+            "counterspell",
         ],
         looks: &[
             1294, 1470, 1484, 1592, 1600, 2134, 2135, 2644, 2657, 2810, 3108, 3109, 3292, 3293,
@@ -2631,6 +3324,9 @@ pub(crate) static CLASSES: &[ClassDef] = &[
             "death_coil",
             "searing_pain",
             "shadowburn",
+            "drain_life",
+            "fear",
+            "drain_soul",
         ],
         looks: &[
             1324, 1325, 1326, 1469, 1581, 1604, 1884, 1930, 2637, 2646, 2675, 3115, 3116, 3122,
@@ -2655,6 +3351,9 @@ pub(crate) static CLASSES: &[ClassDef] = &[
             "thorns",
             "rejuvenation",
             "shred",
+            "swipe",
+            "bash",
+            "regrowth",
         ],
         looks: &[
             1706, 1732, 2106, 2115, 2121, 2250, 2255, 2261, 3300, 3301, 3302, 3819, 3820, 7357,

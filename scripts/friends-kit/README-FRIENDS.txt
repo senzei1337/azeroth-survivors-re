@@ -1,10 +1,14 @@
 AZEROTH SURVIVORS - LAUNCH NIGHT KIT
 ====================================
 
+MODDED BUILD ("more-spells"): 25 extra classic spells across all nine classes, each with its own
+legendary. It updates from senzei1337/azeroth-survivors-re, not the official repo, and everyone in
+a party must run this same kit.
+
 You need a WoW 1.12.1 client's Data folder (the one with the 14 .MPQ files).
 This kit does NOT include it. The full guide is docs/FRIENDS.md in the repo; the short version:
 
-1. Download https://github.com/deanmathieson/azeroth-survivors-re/releases/latest/download/AzerothSurvivors.zip
+1. Download https://github.com/senzei1337/azeroth-survivors-re/releases/latest/download/AzerothSurvivors.zip
    once, then unzip this whole folder somewhere you can write to (Desktop or Documents is fine,
    not Program Files). Spaces in the path are fine.
 

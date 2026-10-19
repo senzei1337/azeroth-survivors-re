@@ -694,7 +694,7 @@ fn cast_for(
                         radius: p.radius,
                         left: p.duration,
                         tick: 0.3,
-                        pulse: def.key == "magma_totem",
+                        pulse: matches!(def.key, "magma_totem" | "earthbind_totem"),
                         owner: me,
                         ability: def,
                         school: p.school,
@@ -847,10 +847,15 @@ pub(super) fn tick_areas(
             fx.cast(e, totem.cast, &[], None);
             for f in &targets {
                 let (dmg, crit) = roll(&mut rng, &stats, totem.damage);
+                // A pulsing totem's crowd control (Earthbind's slow) rides on every pulse.
+                let def = totem.ability;
                 hits.write(Hit {
                     color: COLOR_SPELL,
-                    origin: Origin::Ability(totem.ability),
+                    origin: Origin::Ability(def),
                     school: Some(totem.school),
+                    effect: def.effect,
+                    mark: def.mark,
+                    mark_dur: if def.mark != 0 { mark_secs(def, 0.0) } else { 0.0 },
                     ..Hit::direct(totem.owner, f.e, dmg, crit)
                 });
             }

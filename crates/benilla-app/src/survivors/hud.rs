@@ -2544,6 +2544,11 @@ fn ability_body(def: &AbilityDef, c: &Cast) -> String {
             "Below 85% health, heals you for {d} over {} sec",
             num(c.duration)
         ),
+        Kind::Totem if def.key == "earthbind_totem" => format!(
+            "Drops a totem for {} sec that grips every enemy within {} yd for {d} damage every 2 sec",
+            num(c.duration),
+            num(c.radius)
+        ),
         Kind::Totem if def.key == "magma_totem" => format!(
             "Drops a totem for {} sec that burns every enemy within {} yd for {d} damage every 2 sec",
             num(c.duration),
